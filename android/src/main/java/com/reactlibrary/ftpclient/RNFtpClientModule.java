@@ -3,6 +3,7 @@ package com.reactlibrary.ftpclient;
 
 import androidx.annotation.Nullable;
 import android.util.Log;
+import android.net.Uri;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -67,6 +68,7 @@ public class RNFtpClientModule extends ReactContextBaseJavaModule {
     this.reactContext = reactContext;
   }
 
+  // Required for rn built in EventEmitter Calls.
   @ReactMethod
   public void addListener(String eventName) {
 
@@ -236,7 +238,7 @@ public class RNFtpClientModule extends ReactContextBaseJavaModule {
         try {
           login(client);
           client.setFileType(FTP.BINARY_FILE_TYPE);
-          File localFile = new File(path);
+          File localFile = new File(Uri.parse(path).getPath());
           long totalBytes = localFile.length();
           long finishBytes = 0;
 
@@ -360,9 +362,11 @@ public class RNFtpClientModule extends ReactContextBaseJavaModule {
                   client.setFileType(FTP.BINARY_FILE_TYPE);
 
                   final long totalBytes = getRemoteSize(client,remoteDestinationPath);
-                  File downloadFile = new File(getLocalFilePath(path,remoteDestinationPath));
+                  File downloadFile = new File(Uri.parse(path).getPath());
                   if(downloadFile.exists()){
-                    throw new Error(String.format("local file exist",downloadFile.getAbsolutePath()));
+                    if (!downloadFile.delete()) {
+                      promise.reject(RNFTPCLIENT_ERROR_CODE_DOWNLOAD, "Failed to delete existing file");
+                    }
                   }
                   File parentDir = downloadFile.getParentFile();
                   if(parentDir != null && !parentDir.exists()){
