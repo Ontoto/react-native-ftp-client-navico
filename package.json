@@ -21,7 +21,7 @@
   "author": "bruce <bruce.li@navico.com>",
   "license": "MIT",
   "peerDependencies": {
-    "react-native": "^0.41.2"
+    "react-native": "^0.71.6"
   },
   "devDependencies": {
     "@types/jest": "^25.1.2",
